@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>vcha.jp RTMPストリーミング - 利用マニュアル</title>
+<title>vcha.jp RTMPSストリーミング - 利用マニュアル</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Noto+Sans+JP:wght@300;400;500;700&display=swap" rel="stylesheet">
 <style>
@@ -156,17 +156,17 @@
 
 <div class="hero">
   <div class="hero-badge">SERVICE LIVE</div>
-  <h1><span class="dim">// </span><span class="accent">RTMP</span><br>Streaming<br>Manual</h1>
-  <p class="hero-desc">OBSなどの配信ソフトからRTMPで映像を送信し、RTSP形式で視聴者に届けるストリーミングサービスです。登録不要・無料でご利用いただけます。</p>
+  <h1><span class="dim">// </span><span class="accent">RTMPS</span><br>Streaming<br>Manual</h1>
+  <p class="hero-desc">OBSなどの配信ソフトからRTMPS（暗号化）で映像を送信し、RTSPS形式で視聴者に届けるストリーミングサービスです。登録不要・無料でご利用いただけます。</p>
   <div class="url-card rtmp">
-    <div class="url-label">📡 配信URL（RTMP）</div>
-    <div class="url-value">rtmp://rtmp.vcha.jp/live/<span class="key-part">[ストリームキー]</span></div>
-    <button class="copy-btn" onclick="copyUrl(this,'rtmp://rtmp.vcha.jp/live/')">COPY</button>
+    <div class="url-label">🔒 配信URL（RTMPS）</div>
+    <div class="url-value">rtmps://live.vcha.jp/live/<span class="key-part">[ストリームキー]</span></div>
+    <button class="copy-btn" onclick="copyUrl(this,'rtmps://live.vcha.jp/live/')">COPY</button>
   </div>
   <div class="url-card rtsp">
-    <div class="url-label">▶ 視聴URL（RTSP）</div>
-    <div class="url-value">rtsp://rtmp.vcha.jp/live/<span class="key-part">[ストリームキー]</span></div>
-    <button class="copy-btn" onclick="copyUrl(this,'rtsp://rtmp.vcha.jp/live/')">COPY</button>
+    <div class="url-label">🔒 視聴URL（RTSPS）</div>
+    <div class="url-value">rtsps://live.vcha.jp/live/<span class="key-part">[ストリームキー]</span></div>
+    <button class="copy-btn" onclick="copyUrl(this,'rtsps://live.vcha.jp/live/')">COPY</button>
   </div>
 </div>
 
@@ -177,9 +177,11 @@
       <table>
         <thead><tr><th>項目</th><th>内容</th></tr></thead>
         <tbody>
-          <tr><td>配信プロトコル</td><td><code>RTMP</code></td></tr>
-          <tr><td>視聴プロトコル</td><td><code>RTSP</code></td></tr>
-          <tr><td>配信サーバー</td><td><code>rtmp.vcha.jp</code></td></tr>
+          <tr><td>配信プロトコル</td><td><code>RTMPS</code>（TLS暗号化）</td></tr>
+          <tr><td>視聴プロトコル</td><td><code>RTSPS</code>（TLS暗号化）</td></tr>
+          <tr><td>配信サーバー</td><td><code>live.vcha.jp</code></td></tr>
+          <tr><td>配信ポート</td><td><code>1936</code></td></tr>
+          <tr><td>視聴ポート</td><td><code>8322</code></td></tr>
           <tr><td>認証</td><td>なし（完全オープン・登録不要）</td></tr>
           <tr><td>利用料金</td><td>無料</td></tr>
           <tr><td>同時配信制限</td><td>1ストリームキーにつき1配信のみ（先着優先）</td></tr>
@@ -188,18 +190,18 @@
         </tbody>
       </table>
     </div>
-    <div class="note success"><span class="note-icon">💡</span><span>VRChatのVideo Playerでの利用を想定していますが、RTSPに対応した任意のプレイヤーで視聴可能です。</span></div>
+    <div class="note success"><span class="note-icon">🔒</span><span>全通信はTLS暗号化されています。VRChatのVideo Playerでの利用を想定していますが、RTSPSに対応した任意のプレイヤーで視聴可能です。</span></div>
   </section>
 
   <section id="urls">
     <div class="section-header"><span class="section-num">02</span><h2>URL仕様</h2></div>
     <p>ストリームキーには任意の文字列を使用できます。英数字・ハイフン・アンダースコアを推奨します。</p>
     <div class="code-block"><pre><span class="comment"># 配信URL（OBS等に設定）</span>
-<span class="key">サーバー :</span> <span class="val">rtmp://rtmp.vcha.jp/live</span>
+<span class="key">サーバー :</span> <span class="val">rtmps://live.vcha.jp/live</span>
 <span class="key">キー    :</span> <span class="val">mystream</span>   <span class="comment">← 任意の文字列</span>
 
 <span class="comment"># 視聴URL（VRChat / VLC等に入力）</span>
-<span class="val">rtsp://rtmp.vcha.jp/live/mystream</span></pre></div>
+<span class="val">rtsps://live.vcha.jp/live/mystream</span></pre></div>
     <h3>ストリームキーの衝突について</h3>
     <div class="collision-grid">
       <div class="collision-cell header">状況</div>
@@ -226,7 +228,7 @@
       <table>
         <thead><tr><th>設定項目</th><th>入力値</th></tr></thead>
         <tbody>
-          <tr><td>サーバー</td><td><code>rtmp://rtmp.vcha.jp/live</code></td></tr>
+          <tr><td>サーバー</td><td><code>rtmps://live.vcha.jp/live</code></td></tr>
           <tr><td>ストリームキー</td><td>任意の文字列（例：<code>mystream</code>）</td></tr>
         </tbody>
       </table>
@@ -250,14 +252,14 @@
   <section id="view">
     <div class="section-header"><span class="section-num">04</span><h2>視聴方法</h2></div>
     <h3>VRChat Video Player</h3>
-    <p>VRChatのワールド内Video PlayerにRTSP URLを入力してください。</p>
-    <div class="code-block"><pre><span class="val">rtsp://rtmp.vcha.jp/live/[ストリームキー]</span></pre></div>
-    <div class="note"><span class="note-icon">💡</span><span>RTSPに対応したワールドでのみ利用できます。配信開始後にURLを入力してください。</span></div>
+    <p>VRChatのワールド内Video PlayerにRTSPS URLを入力してください。</p>
+    <div class="code-block"><pre><span class="val">rtsps://live.vcha.jp/live/[ストリームキー]</span></pre></div>
+    <div class="note"><span class="note-icon">💡</span><span>RTSPSに対応したワールドでのみ利用できます。配信開始後にURLを入力してください。</span></div>
     <h3>VLC Media Player</h3>
     <ol class="steps">
       <li>VLC Media Playerを開く</li>
       <li>「メディア」→「ネットワークストリームを開く」をクリック</li>
-      <li>URLを入力：<code>rtsp://rtmp.vcha.jp/live/[ストリームキー]</code></li>
+      <li>URLを入力：<code>rtsps://live.vcha.jp/live/[ストリームキー]</code></li>
       <li>「再生」をクリック</li>
     </ol>
   </section>
@@ -277,6 +279,8 @@
       <div class="faq-a"><div class="faq-a-inner"><ul class="bullets">
         <li>ストリームキーが他の配信者と重複していないか確認してください</li>
         <li>ビットレートが5Mbpsを超えていないか確認してください</li>
+        <li>OBSのサーバー設定が <code>rtmps://live.vcha.jp/live</code> になっているか確認してください</li>
+        <li>ファイアウォールでポート1936が許可されているか確認してください</li>
       </ul></div></div>
     </div>
     <div class="faq-item">
@@ -284,7 +288,8 @@
       <div class="faq-a"><div class="faq-a-inner"><ul class="bullets">
         <li>配信が開始されているか確認してください（配信開始前は視聴できません）</li>
         <li>ストリームキーのスペルが正しいか確認してください</li>
-        <li>使用するプレイヤーがRTSPに対応しているか確認してください</li>
+        <li>使用するプレイヤーがRTSPSに対応しているか確認してください</li>
+        <li>URLが <code>rtsps://live.vcha.jp/live/[キー]</code> の形式になっているか確認してください</li>
       </ul></div></div>
     </div>
     <div class="faq-item">
@@ -304,7 +309,7 @@
 </main>
 
 <footer>
-  <p>vcha.jp RTMP Streaming Service &nbsp;|&nbsp; Provided by <a href="https://nccgr.jp">NCCGr</a> (H-05-01926) &nbsp;|&nbsp; Free to use</p>
+  <p>vcha.jp RTMPS Streaming Service &nbsp;|&nbsp; Provided by <a href="https://nccgr.jp">NCCGr</a> (H-05-01926) &nbsp;|&nbsp; Free to use</p>
 </footer>
 
 <script>
