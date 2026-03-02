@@ -161,7 +161,7 @@
   <div class="url-card rtmp">
     <div class="url-label">📡 配信URL（RTMP）</div>
     <div class="url-value">rtmp://live.vcha.jp/live/<span class="key-part">[ストリームキー]</span></div>
-    <button class="copy-btn" onclick="copyUrl(this,'rtmp://rtmp.vcha.jp/live/')">COPY</button>
+    <button class="copy-btn" onclick="copyUrl(this,'rtmp://live.vcha.jp/live/')">COPY</button>
   </div>
   <div class="url-card rtsp">
     <div class="url-label">▶ 視聴URL（RTSP）</div>
@@ -179,7 +179,7 @@
         <tbody>
           <tr><td>配信プロトコル</td><td><code>RTMP</code></td></tr>
           <tr><td>視聴プロトコル</td><td><code>RTSP</code></td></tr>
-          <tr><td>配信サーバー</td><td><code>rtmp.vcha.jp</code></td></tr>
+          <tr><td>配信サーバー</td><td><code>live.vcha.jp</code></td></tr>
           <tr><td>認証</td><td>なし（完全オープン・登録不要）</td></tr>
           <tr><td>利用料金</td><td>無料</td></tr>
           <tr><td>同時配信制限</td><td>1ストリームキーにつき1配信のみ（先着優先）</td></tr>
@@ -195,7 +195,7 @@
     <div class="section-header"><span class="section-num">02</span><h2>URL仕様</h2></div>
     <p>ストリームキーには任意の文字列を使用できます。英数字・ハイフン・アンダースコアを推奨します。</p>
     <div class="code-block"><pre><span class="comment"># 配信URL（OBS等に設定）</span>
-<span class="key">サーバー :</span> <span class="val">rtmp://rtmp.vcha.jp/live</span>
+<span class="key">サーバー :</span> <span class="val">rtmp://live.vcha.jp/live</span>
 <span class="key">キー    :</span> <span class="val">mystream</span>   <span class="comment">← 任意の文字列</span>
 
 <span class="comment"># 視聴URL（VRChat / VLC等に入力）</span>
@@ -226,7 +226,7 @@
       <table>
         <thead><tr><th>設定項目</th><th>入力値</th></tr></thead>
         <tbody>
-          <tr><td>サーバー</td><td><code>rtmp://rtmp.vcha.jp/live</code></td></tr>
+          <tr><td>サーバー</td><td><code>rtmp://live.vcha.jp/live</code></td></tr>
           <tr><td>ストリームキー</td><td>任意の文字列（例：<code>mystream</code>）</td></tr>
         </tbody>
       </table>
@@ -298,6 +298,7 @@
         <li>他者への誹謗中傷・ハラスメントを含むコンテンツ</li>
         <li>わいせつ・暴力的なコンテンツ</li>
         <li>サービスへの意図的な負荷をかける行為</li>
+        <li>個人で運営しているサービスのため告知なしで停止する恐れがあります</li>
       </ul></div></div>
     </div>
   </section>
