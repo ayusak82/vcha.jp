@@ -1,0 +1,329 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>vcha.jp RTMPストリーミング - 利用マニュアル</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Noto+Sans+JP:wght@300;400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0a0e17;
+    --bg2: #111827;
+    --bg3: #1a2235;
+    --border: #1e3a5f;
+    --accent: #00d4ff;
+    --accent2: #0084ff;
+    --accent3: #00ff9d;
+    --text: #e2e8f0;
+    --text2: #94a3b8;
+    --text3: #64748b;
+    --mono: 'Space Mono', monospace;
+    --sans: 'Noto Sans JP', sans-serif;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: var(--sans);
+    font-weight: 300;
+    line-height: 1.8;
+    min-height: 100vh;
+  }
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image:
+      linear-gradient(rgba(0,212,255,0.03) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(0,212,255,0.03) 1px, transparent 1px);
+    background-size: 40px 40px;
+    pointer-events: none;
+    z-index: 0;
+  }
+  header {
+    position: sticky; top: 0; z-index: 100;
+    background: rgba(10,14,23,0.92);
+    backdrop-filter: blur(12px);
+    border-bottom: 1px solid var(--border);
+    padding: 0 2rem; height: 60px;
+    display: flex; align-items: center; justify-content: space-between;
+  }
+  .logo { font-family: var(--mono); font-size: 1rem; color: var(--accent); letter-spacing: 0.1em; text-decoration: none; }
+  .logo span { color: var(--text3); }
+  nav { display: flex; gap: 1.5rem; }
+  nav a { font-family: var(--mono); font-size: 0.7rem; color: var(--text3); text-decoration: none; letter-spacing: 0.1em; text-transform: uppercase; transition: color 0.2s; }
+  nav a:hover { color: var(--accent); }
+  .hero { position: relative; z-index: 1; padding: 6rem 2rem 4rem; max-width: 960px; margin: 0 auto; }
+  .hero-badge {
+    display: inline-flex; align-items: center; gap: 0.5rem;
+    font-family: var(--mono); font-size: 0.65rem; color: var(--accent3);
+    letter-spacing: 0.15em; text-transform: uppercase;
+    border: 1px solid rgba(0,255,157,0.3); padding: 0.3rem 0.8rem; margin-bottom: 1.5rem;
+  }
+  .hero-badge::before {
+    content: ''; width: 6px; height: 6px; border-radius: 50%;
+    background: var(--accent3); animation: pulse 2s infinite;
+  }
+  @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.3} }
+  h1 { font-family: var(--mono); font-size: clamp(2rem,5vw,3.5rem); font-weight: 700; line-height: 1.1; letter-spacing: -0.02em; margin-bottom: 1rem; }
+  h1 .accent { color: var(--accent); }
+  h1 .dim { color: var(--text3); font-weight: 400; }
+  .hero-desc { font-size: 1rem; color: var(--text2); max-width: 560px; margin-bottom: 2.5rem; }
+  .url-card { background: var(--bg2); border: 1px solid var(--border); padding: 1.5rem; margin-bottom: 1rem; position: relative; overflow: hidden; }
+  .url-card::before { content: ''; position: absolute; top: 0; left: 0; width: 3px; height: 100%; }
+  .url-card.rtmp::before { background: var(--accent2); }
+  .url-card.rtsp::before { background: var(--accent3); }
+  .url-label { font-family: var(--mono); font-size: 0.65rem; letter-spacing: 0.15em; text-transform: uppercase; margin-bottom: 0.5rem; }
+  .url-card.rtmp .url-label { color: var(--accent2); }
+  .url-card.rtsp .url-label { color: var(--accent3); }
+  .url-value { font-family: var(--mono); font-size: clamp(0.8rem,2vw,1rem); color: var(--text); word-break: break-all; }
+  .url-value .key-part { color: var(--accent); border-bottom: 1px dashed var(--accent); }
+  .copy-btn { position: absolute; top: 1rem; right: 1rem; background: transparent; border: 1px solid var(--border); color: var(--text3); font-family: var(--mono); font-size: 0.6rem; letter-spacing: 0.1em; padding: 0.3rem 0.6rem; cursor: pointer; transition: all 0.2s; }
+  .copy-btn:hover { border-color: var(--accent); color: var(--accent); }
+  .copy-btn.copied { border-color: var(--accent3); color: var(--accent3); }
+  main { position: relative; z-index: 1; max-width: 960px; margin: 0 auto; padding: 0 2rem 6rem; }
+  section { margin-bottom: 4rem; opacity: 0; transform: translateY(20px); transition: opacity 0.5s, transform 0.5s; }
+  section.visible { opacity: 1; transform: translateY(0); }
+  .section-header { display: flex; align-items: center; gap: 1rem; margin-bottom: 1.5rem; padding-bottom: 0.75rem; border-bottom: 1px solid var(--border); }
+  .section-num { font-family: var(--mono); font-size: 0.65rem; color: var(--accent); letter-spacing: 0.15em; }
+  h2 { font-family: var(--mono); font-size: 1.1rem; font-weight: 700; color: var(--text); letter-spacing: 0.05em; }
+  h3 { font-family: var(--sans); font-size: 0.9rem; font-weight: 500; color: var(--accent); margin: 1.5rem 0 0.75rem; letter-spacing: 0.05em; }
+  p { font-size: 0.9rem; color: var(--text2); margin-bottom: 1rem; }
+  .table-wrap { overflow-x: auto; margin-bottom: 1.5rem; }
+  table { width: 100%; border-collapse: collapse; font-size: 0.85rem; }
+  thead tr { background: var(--bg3); border-bottom: 1px solid var(--accent2); }
+  thead th { font-family: var(--mono); font-size: 0.65rem; letter-spacing: 0.15em; text-transform: uppercase; color: var(--accent2); padding: 0.75rem 1rem; text-align: left; white-space: nowrap; }
+  tbody tr { border-bottom: 1px solid var(--border); transition: background 0.15s; }
+  tbody tr:hover { background: rgba(0,212,255,0.03); }
+  td { padding: 0.75rem 1rem; color: var(--text2); vertical-align: top; }
+  td:first-child { font-family: var(--mono); font-size: 0.75rem; color: var(--text3); white-space: nowrap; width: 30%; }
+  td code, td .mono { font-family: var(--mono); font-size: 0.8rem; color: var(--accent3); background: rgba(0,255,157,0.05); padding: 0.1rem 0.4rem; border: 1px solid rgba(0,255,157,0.15); }
+  .code-block { background: #0d1117; border: 1px solid var(--border); border-left: 3px solid var(--accent2); padding: 1.25rem 1.5rem; margin: 1rem 0; overflow-x: auto; }
+  .code-block pre { font-family: var(--mono); font-size: 0.82rem; color: var(--accent3); line-height: 1.7; white-space: pre-wrap; word-break: break-all; }
+  .code-block .comment { color: var(--text3); }
+  .code-block .key { color: var(--accent); }
+  .code-block .val { color: #ffd700; }
+  .note { display: flex; gap: 0.75rem; background: rgba(0,132,255,0.05); border: 1px solid rgba(0,132,255,0.2); border-left: 3px solid var(--accent2); padding: 1rem 1.25rem; margin: 1rem 0; font-size: 0.85rem; color: var(--text2); }
+  .note.warn { background: rgba(255,165,0,0.05); border-color: rgba(255,165,0,0.2); border-left-color: #ffa500; }
+  .note.success { background: rgba(0,255,157,0.05); border-color: rgba(0,255,157,0.2); border-left-color: var(--accent3); }
+  .note-icon { font-size: 1rem; flex-shrink: 0; margin-top: 0.1rem; }
+  .steps { counter-reset: step; list-style: none; }
+  .steps li { counter-increment: step; display: flex; gap: 1rem; margin-bottom: 1rem; font-size: 0.9rem; color: var(--text2); }
+  .steps li::before { content: counter(step); font-family: var(--mono); font-size: 0.7rem; font-weight: 700; color: var(--bg); background: var(--accent2); width: 22px; height: 22px; border-radius: 50%; display: flex; align-items: center; justify-content: center; flex-shrink: 0; margin-top: 0.2rem; }
+  .bullets { list-style: none; }
+  .bullets li { padding: 0.3rem 0 0.3rem 1.2rem; font-size: 0.9rem; color: var(--text2); position: relative; }
+  .bullets li::before { content: '▸'; position: absolute; left: 0; color: var(--accent); font-size: 0.7rem; }
+  .collision-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1px; background: var(--border); border: 1px solid var(--border); margin: 1rem 0; }
+  .collision-cell { padding: 1rem; background: var(--bg2); font-size: 0.85rem; color: var(--text2); }
+  .collision-cell.header { background: var(--bg3); font-family: var(--mono); font-size: 0.65rem; letter-spacing: 0.1em; text-transform: uppercase; color: var(--text3); }
+  .ok { color: var(--accent3); font-weight: 500; }
+  .ng { color: #ff6b6b; font-weight: 500; }
+  .faq-item { border: 1px solid var(--border); margin-bottom: 0.75rem; overflow: hidden; }
+  .faq-q { padding: 1rem 1.25rem; font-size: 0.9rem; font-weight: 500; color: var(--text); cursor: pointer; display: flex; justify-content: space-between; align-items: center; transition: background 0.15s; user-select: none; }
+  .faq-q:hover { background: var(--bg3); }
+  .faq-q .arrow { font-family: var(--mono); font-size: 0.8rem; color: var(--accent); transition: transform 0.2s; }
+  .faq-item.open .faq-q .arrow { transform: rotate(90deg); }
+  .faq-a { max-height: 0; overflow: hidden; transition: max-height 0.3s ease; }
+  .faq-item.open .faq-a { max-height: 400px; }
+  .faq-a-inner { padding: 1rem 1.25rem; border-top: 1px solid var(--border); font-size: 0.85rem; color: var(--text2); background: var(--bg2); }
+  footer { position: relative; z-index: 1; border-top: 1px solid var(--border); padding: 2rem; text-align: center; font-family: var(--mono); font-size: 0.65rem; color: var(--text3); letter-spacing: 0.1em; }
+  footer a { color: var(--accent); text-decoration: none; }
+  ::-webkit-scrollbar { width: 4px; height: 4px; }
+  ::-webkit-scrollbar-track { background: var(--bg); }
+  ::-webkit-scrollbar-thumb { background: var(--border); }
+  @media (max-width: 640px) {
+    nav { display: none; }
+    .hero { padding: 4rem 1.5rem 2rem; }
+    main { padding: 0 1.5rem 4rem; }
+    .collision-grid { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <a href="#" class="logo">vcha<span>.jp</span></a>
+  <nav>
+    <a href="#overview">概要</a>
+    <a href="#urls">URL</a>
+    <a href="#obs">OBS設定</a>
+    <a href="#view">視聴</a>
+    <a href="#faq">FAQ</a>
+  </nav>
+</header>
+
+<div class="hero">
+  <div class="hero-badge">SERVICE LIVE</div>
+  <h1><span class="dim">// </span><span class="accent">RTMP</span><br>Streaming<br>Manual</h1>
+  <p class="hero-desc">OBSなどの配信ソフトからRTMPで映像を送信し、RTSP形式で視聴者に届けるストリーミングサービスです。登録不要・無料でご利用いただけます。</p>
+  <div class="url-card rtmp">
+    <div class="url-label">📡 配信URL（RTMP）</div>
+    <div class="url-value">rtmp://rtmp.vcha.jp/live/<span class="key-part">[ストリームキー]</span></div>
+    <button class="copy-btn" onclick="copyUrl(this,'rtmp://rtmp.vcha.jp/live/')">COPY</button>
+  </div>
+  <div class="url-card rtsp">
+    <div class="url-label">▶ 視聴URL（RTSP）</div>
+    <div class="url-value">rtsp://rtmp.vcha.jp/live/<span class="key-part">[ストリームキー]</span></div>
+    <button class="copy-btn" onclick="copyUrl(this,'rtsp://rtmp.vcha.jp/live/')">COPY</button>
+  </div>
+</div>
+
+<main>
+  <section id="overview">
+    <div class="section-header"><span class="section-num">01</span><h2>サービス概要</h2></div>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>項目</th><th>内容</th></tr></thead>
+        <tbody>
+          <tr><td>配信プロトコル</td><td><code>RTMP</code></td></tr>
+          <tr><td>視聴プロトコル</td><td><code>RTSP</code></td></tr>
+          <tr><td>配信サーバー</td><td><code>rtmp.vcha.jp</code></td></tr>
+          <tr><td>認証</td><td>なし（完全オープン・登録不要）</td></tr>
+          <tr><td>利用料金</td><td>無料</td></tr>
+          <tr><td>同時配信制限</td><td>1ストリームキーにつき1配信のみ（先着優先）</td></tr>
+          <tr><td>視聴者数制限</td><td>なし（無制限）</td></tr>
+          <tr><td>帯域上限</td><td>1配信あたり 5Mbps</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="note success"><span class="note-icon">💡</span><span>VRChatのVideo Playerでの利用を想定していますが、RTSPに対応した任意のプレイヤーで視聴可能です。</span></div>
+  </section>
+
+  <section id="urls">
+    <div class="section-header"><span class="section-num">02</span><h2>URL仕様</h2></div>
+    <p>ストリームキーには任意の文字列を使用できます。英数字・ハイフン・アンダースコアを推奨します。</p>
+    <div class="code-block"><pre><span class="comment"># 配信URL（OBS等に設定）</span>
+<span class="key">サーバー :</span> <span class="val">rtmp://rtmp.vcha.jp/live</span>
+<span class="key">キー    :</span> <span class="val">mystream</span>   <span class="comment">← 任意の文字列</span>
+
+<span class="comment"># 視聴URL（VRChat / VLC等に入力）</span>
+<span class="val">rtsp://rtmp.vcha.jp/live/mystream</span></pre></div>
+    <h3>ストリームキーの衝突について</h3>
+    <div class="collision-grid">
+      <div class="collision-cell header">状況</div>
+      <div class="collision-cell header">動作</div>
+      <div class="collision-cell">1人目が配信中</div>
+      <div class="collision-cell ok">✓ そのまま継続</div>
+      <div class="collision-cell">2人目が同じキーで接続</div>
+      <div class="collision-cell ng">✗ 2人目の接続を拒否</div>
+    </div>
+    <div class="note warn"><span class="note-icon">⚠️</span><span>短いキー（3文字以下など）は他の利用者と衝突する可能性があります。8文字以上のランダムな文字列を推奨します。</span></div>
+  </section>
+
+  <section id="obs">
+    <div class="section-header"><span class="section-num">03</span><h2>OBS 設定手順</h2></div>
+    <h3>配信設定</h3>
+    <ol class="steps">
+      <li>OBS Studioを開き、「ファイル」→「設定」を開く</li>
+      <li>左メニューの「配信」をクリック</li>
+      <li>「サービス」を <code>カスタム...</code> に変更</li>
+      <li>以下の値を入力する</li>
+      <li>「OK」をクリックして保存し、「配信開始」をクリック</li>
+    </ol>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>設定項目</th><th>入力値</th></tr></thead>
+        <tbody>
+          <tr><td>サーバー</td><td><code>rtmp://rtmp.vcha.jp/live</code></td></tr>
+          <tr><td>ストリームキー</td><td>任意の文字列（例：<code>mystream</code>）</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <h3>推奨エンコード設定</h3>
+    <div class="note warn"><span class="note-icon">⚠️</span><span>帯域上限が5Mbpsのため、ビットレートは4500Kbps以下を推奨します。超過すると映像が乱れる場合があります。</span></div>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>設定項目</th><th>推奨値</th></tr></thead>
+        <tbody>
+          <tr><td>エンコーダ</td><td>x264 または H.264（ハードウェア）</td></tr>
+          <tr><td>ビットレート</td><td><code>3000〜4500 Kbps</code></td></tr>
+          <tr><td>解像度</td><td>1280×720（720p）または 1920×1080（1080p）</td></tr>
+          <tr><td>FPS</td><td><code>30</code></td></tr>
+          <tr><td>キーフレーム間隔</td><td><code>2秒</code></td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <section id="view">
+    <div class="section-header"><span class="section-num">04</span><h2>視聴方法</h2></div>
+    <h3>VRChat Video Player</h3>
+    <p>VRChatのワールド内Video PlayerにRTSP URLを入力してください。</p>
+    <div class="code-block"><pre><span class="val">rtsp://rtmp.vcha.jp/live/[ストリームキー]</span></pre></div>
+    <div class="note"><span class="note-icon">💡</span><span>RTSPに対応したワールドでのみ利用できます。配信開始後にURLを入力してください。</span></div>
+    <h3>VLC Media Player</h3>
+    <ol class="steps">
+      <li>VLC Media Playerを開く</li>
+      <li>「メディア」→「ネットワークストリームを開く」をクリック</li>
+      <li>URLを入力：<code>rtsp://rtmp.vcha.jp/live/[ストリームキー]</code></li>
+      <li>「再生」をクリック</li>
+    </ol>
+  </section>
+
+  <section id="faq">
+    <div class="section-header"><span class="section-num">05</span><h2>よくある質問</h2></div>
+    <div class="faq-item">
+      <div class="faq-q" onclick="toggleFaq(this)">ストリームキーは事前登録が必要ですか？<span class="arrow">▸</span></div>
+      <div class="faq-a"><div class="faq-a-inner">不要です。任意の文字列をキーとして設定するだけで配信を開始できます。アカウント登録も必要ありません。</div></div>
+    </div>
+    <div class="faq-item">
+      <div class="faq-q" onclick="toggleFaq(this)">同時に何人まで視聴できますか？<span class="arrow">▸</span></div>
+      <div class="faq-a"><div class="faq-a-inner">視聴者数に制限はありません。何人でも同時に視聴可能です。</div></div>
+    </div>
+    <div class="faq-item">
+      <div class="faq-q" onclick="toggleFaq(this)">配信が繋がらない場合は？<span class="arrow">▸</span></div>
+      <div class="faq-a"><div class="faq-a-inner"><ul class="bullets">
+        <li>ストリームキーが他の配信者と重複していないか確認してください</li>
+        <li>ビットレートが5Mbpsを超えていないか確認してください</li>
+        <li>ファイアウォールでポート1935（RTMP）が許可されているか確認してください</li>
+      </ul></div></div>
+    </div>
+    <div class="faq-item">
+      <div class="faq-q" onclick="toggleFaq(this)">視聴URLが再生されない場合は？<span class="arrow">▸</span></div>
+      <div class="faq-a"><div class="faq-a-inner"><ul class="bullets">
+        <li>配信が開始されているか確認してください（配信開始前は視聴できません）</li>
+        <li>ストリームキーのスペルが正しいか確認してください</li>
+        <li>使用するプレイヤーがRTSPに対応しているか確認してください</li>
+      </ul></div></div>
+    </div>
+    <div class="faq-item">
+      <div class="faq-q" onclick="toggleFaq(this)">録画はできますか？<span class="arrow">▸</span></div>
+      <div class="faq-a"><div class="faq-a-inner">本サービス側での録画機能はありません。OBS等のソフトウェアで手元に録画してください。</div></div>
+    </div>
+    <div class="faq-item">
+      <div class="faq-q" onclick="toggleFaq(this)">利用規約・禁止事項は？<span class="arrow">▸</span></div>
+      <div class="faq-a"><div class="faq-a-inner"><ul class="bullets">
+        <li>著作権を侵害するコンテンツの配信</li>
+        <li>他者への誹謗中傷・ハラスメントを含むコンテンツ</li>
+        <li>わいせつ・暴力的なコンテンツ</li>
+        <li>サービスへの意図的な負荷をかける行為</li>
+      </ul></div></div>
+    </div>
+  </section>
+</main>
+
+<footer>
+  <p>vcha.jp RTMP Streaming Service &nbsp;|&nbsp; Provided by <a href="https://vcha.jp">NCCGr</a> (H-05-01926) &nbsp;|&nbsp; Free to use</p>
+</footer>
+
+<script>
+  const sections = document.querySelectorAll('section');
+  const observer = new IntersectionObserver(entries => {
+    entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('visible'); });
+  }, { threshold: 0.1 });
+  sections.forEach(s => observer.observe(s));
+
+  function toggleFaq(el) { el.closest('.faq-item').classList.toggle('open'); }
+
+  function copyUrl(btn, url) {
+    navigator.clipboard.writeText(url).then(() => {
+      btn.textContent = 'COPIED';
+      btn.classList.add('copied');
+      setTimeout(() => { btn.textContent = 'COPY'; btn.classList.remove('copied'); }, 2000);
+    });
+  }
+</script>
+</body>
+</html>
